@@ -1,5 +1,8 @@
+
 // admin/src/services/api.js
 // API service for admin panel - Real backend integration
+
+import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -8,7 +11,7 @@ class ApiService {
 
     async login(username, password) {
         try {
-            const response = await fetch(`${API_URL}/auth/login`, {
+            const response = await fetch(`${API_URL} /auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -17,8 +20,15 @@ class ApiService {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Login failed');
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch (parseError) {
+                    // This happens when we get HTML (e.g., 404 page) instead of JSON
+                    console.error('Non-JSON response received from:', `${API_URL}/auth/login`);
+                    throw new Error(`Configuration Error: Connected to ${API_URL} but received HTML. Check VITE_API_URL.`);
+                }
+                throw new Error(errorData.error || 'Login failed');
             }
 
             return await response.json();

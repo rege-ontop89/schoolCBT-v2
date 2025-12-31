@@ -127,9 +127,7 @@ const LoginPage = () => {
                         <span>{isLoading ? 'Signing In...' : 'Sign In'}</span>
                     </button>
                 </form>
-                <p className="text-center text-xs text-gray-500 mt-6">
-                    Demo: username: <strong>admin</strong>, password: <strong>admin123</strong>
-                </p>
+
             </div>
         </div>
     );

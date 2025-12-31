@@ -24,7 +24,19 @@ const syncToCloud = async (message) => {
         }
 
         const projectRoot = path.join(__dirname, '..'); // Root folder
-        const command = `git add . && git commit -m "Auto-Update: ${message}" && git push origin main`;
+
+        // Check for GITHUB_TOKEN for remote auth
+        const token = process.env.GITHUB_TOKEN;
+        const repoUrl = process.env.REPO_URL; // e.g., https://github.com/user/repo.git
+
+        let setupCommand = '';
+        if (token && repoUrl) {
+            // Construct auth URL: https://token@github.com/user/repo.git
+            const authUrl = repoUrl.replace('https://', `https://${token}@`);
+            setupCommand = `git remote set-url origin ${authUrl} && `;
+        }
+
+        const command = `${setupCommand}git add . && git commit -m "Auto-Update: ${message}" && git push origin main`;
 
         console.log(`☁️ Syncing to cloud: ${message}...`);
 
